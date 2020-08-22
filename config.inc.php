@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+// where to store cache data
+$cfg['TempDir'] = '/tmp';
+
 // secret used when auth method is cookie
 $cfg['blowfish_secret'] = '%BLOWFISH_SECRET%';
 
@@ -18,7 +21,7 @@ $cfg['LoginCookieStore'] = %LOGIN_COOKIE_STORE%;
 $cfg['LoginCookieDeleteAll'] = %LOGIN_COOKIE_DELETE_ALL%;
 
 // policy used for sending reports to PMA maintainers : 'ask', 'always' or 'never'
-$cfg['SendErrorReports'] = %SEND_ERROR_REPORTS%;
+$cfg['SendErrorReports'] = '%SEND_ERROR_REPORTS%';
 
 // iframe policy : true, false or 'sameorigin'
 $cfg['AllowThirdPartyFraming'] = %ALLOW_THIRD_PARTY_FRAMING%;
@@ -63,5 +66,7 @@ $cfg['ShowPhpInfo'] = %SHOW_PHP_INFO%;
 $cfg['ShowGitRevision'] = %SHOW_GIT_REVISION%;
 
 %ALL_SERVERS%
+
+include("custom.config.inc.php");
 
 ?>
