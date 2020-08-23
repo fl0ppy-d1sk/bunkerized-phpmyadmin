@@ -38,6 +38,12 @@ SHOW_STATS="${SHOW_STATS-false}"
 SHOW_SERVER_INFO="${SHOW_SERVER_INFO-false}"
 SHOW_PHP_INFO="${SHOW_PHP_INFO-false}"
 SHOW_GIT_REVISION="${SHOW_GIT_REVISION-false}"
+USERPREFS_DISALLOW="${USERPREFS_DISALLOW-'VersionCheck', 'SendErrorReports', 'hide_db'}"
+HIDE_PMA_VERSION="${HIDE_PMA_VERSION-yes}"
+REMOVE_FILES="${REMOVE_FILES-*.md ChangeLog DCO LICENSE README RELEASE-DATE-* composer.json composer.lock config.sample.inc.php doc examples package.json yarn.lock}"
+RESTRICT_PATHS="${RESTRICT_PATHS-yes}"
+ZERO_CONF="${ZERO_CONF-false}"
+PMA_NO_RELATION_DISABLE_WARNING="${PMA_NO_RELATION_DISABLE_WARNING-true}"
 ALL_SERVERS_SSL="${ALL_SERVERS_SSL-false}"
 ALL_SERVERS_HIDE_DB="${ALL_SERVERS_HIDE_DB-'^(information_schema|performance_schema)\$'}"
 ALL_SERVERS_ALLOW_ROOT="${ALL_SERVERS_ALLOW_ROOT-true}"
@@ -50,11 +56,11 @@ if [ "$PMA_DIRECTORY" = "/" ] ; then
 else
 	mv /opt/phpmyadmin-files /opt/phpmyadmin/$PMA_DIRECTORY
 fi
+cp /opt/config.inc.php /opt/phpmyadmin/$PMA_DIRECTORY
 chown -R root:nginx /opt/phpmyadmin
 chmod -R 750 /opt/phpmyadmin
 
 # replace variables
-cp /opt/config.inc.php /opt/phpmyadmin/$PMA_DIRECTORY
 replace_in_file "/opt/phpmyadmin/${PMA_DIRECTORY}/config.inc.php" "%BLOWFISH_SECRET%" "$BLOWFISH_SECRET"
 replace_in_file "/opt/phpmyadmin/${PMA_DIRECTORY}/config.inc.php" "%LOGIN_COOKIE_RECALL%" "$LOGIN_COOKIE_RECALL"
 replace_in_file "/opt/phpmyadmin/${PMA_DIRECTORY}/config.inc.php" "%LOGIN_COOKIE_VALIDITY%" "$LOGIN_COOKIE_VALIDITY"
@@ -75,6 +81,7 @@ replace_in_file "/opt/phpmyadmin/${PMA_DIRECTORY}/config.inc.php" "%SHOW_STATS%"
 replace_in_file "/opt/phpmyadmin/${PMA_DIRECTORY}/config.inc.php" "%SHOW_SERVER_INFO%" "$SHOW_SERVER_INFO"
 replace_in_file "/opt/phpmyadmin/${PMA_DIRECTORY}/config.inc.php" "%SHOW_PHP_INFO%" "$SHOW_PHP_INFO"
 replace_in_file "/opt/phpmyadmin/${PMA_DIRECTORY}/config.inc.php" "%SHOW_GIT_REVISION%" "$SHOW_GIT_REVISION"
+replace_in_file "/opt/phpmyadmin/${PMA_DIRECTORY}/config.inc.php" "%USERPREFS_DISALLOW%" "$USERPREFS_DISALLOW"
 
 # include custom servers
 for i in $(env | grep "^SERVERS_" | cut -d '_' -f 2 | sort -u) ; do
@@ -94,6 +101,35 @@ for var in $(env) ; do
 	fi
 done
 replace_in_file "/opt/phpmyadmin/${PMA_DIRECTORY}/config.inc.php" "%ALL_SERVERS%" "$ALL_SERVERS"
+
+# the hackish way to hide the real version of PMA
+if [ "$HIDE_PMA_VERSION" = "yes" ] ; then
+	replace_in_file "/opt/phpmyadmin/${PMA_DIRECTORY}/libraries/classes/Config.php" "$PMA_VERSION" "0.0.0"
+	for theme in $(ls /opt/phpmyadmin/${PMA_DIRECTORY}/themes | grep -v "dot.gif") ; do
+		replace_in_file "/opt/phpmyadmin/${PMA_DIRECTORY}/themes/${theme}/theme.json" "5.0" "0.0"
+	done
+fi
+
+# remove files from PMA directory
+if [ -n "$REMOVE_FILES" ] ; then
+	current_dir=$(pwd)
+	cd /opt/phpmyadmin/${PMA_DIRECTORY}
+	rm -rf $REMOVE_FILES
+	cd $current_dir
+fi
+
+# include custom nginx configuration if we decided to restrict some paths
+if [ "$RESTRICT_PATHS" = "yes" ] ; then
+	cp /opt/pma.conf /custom-server-confs/pma.conf
+	replace_pma_directory="$PMA_DIRECTORY"
+	if [ "$(echo $PMA_DIRECTORY | head -c 1)" != "/" ] ; then
+		replace_pma_directory="/${replace_pma_directory}"
+	fi
+	if [ "$(echo $PMA_DIRECTORY | tail -c 1)" != "/" ] ; then
+		replace_pma_directory="${replace_pma_directory}/"
+	fi
+	replace_in_file "/custom-server-confs/pma.conf" "%PMA_DIRECTORY%" "$replace_pma_directory"
+fi
 
 # we're done
 echo "installed" > /opt/phpmyadmin.installed

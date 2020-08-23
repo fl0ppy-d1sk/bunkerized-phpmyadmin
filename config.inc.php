@@ -65,8 +65,18 @@ $cfg['ShowPhpInfo'] = %SHOW_PHP_INFO%;
 // show GIT revision : true or false
 $cfg['ShowGitRevision'] = %SHOW_GIT_REVISION%;
 
+// disable some user preferences
+$cfg['UserprefsDisallow'] = array(%USERPREFS_DISALLOW%);
+
+// enable/disable custom configuration storage for users : true or false
+cfg['ZeroConf'] = %ZERO_CONF%;
+
+// show the warning about configuration storage not present : true or false
+cfg['PmaNoRelation_DisableWarning'] = %PMA_NO_RELATION_DISABLE_WARNING%;
+
 %ALL_SERVERS%
 
 include("custom.config.inc.php");
 
 ?>
+

@@ -75,17 +75,10 @@ Values : *\<any valid directory name\>*
 Default value :  
 Use this variable to put PHPMyAdmin inside a subdirectory (it will be accessible from http(s)://your.server.com/subdirectory). Can be usefull if your instance is accessible from Internet to avoid automatic scripts discovering your service.
 
-`CONFIRM`  
-PMA setting : [$cfg\['Confirm'\]](https://docs.phpmyadmin.net/en/latest/config.html#cfg_Confirm)
-Values : *true* | *false*  
-Default value : *true*  
-If set to *true*, users will be asked to confirm before deleting data.
-
-`ALLOW_USER_DROP_DATABASE`  
-PMA setting : [$cfg\['AllowUserDropDatabase'\]](https://docs.phpmyadmin.net/en/latest/config.html#cfg_AllowUserDropDatabase)  
-Values : *true* | *false*  
-Default value : *false*  
-If set to *false*, users are not allowed to drop their databases within PHPMyAdmin.
+`RESTRICT_PATHS`  
+Values : *yes* | *no*  
+Default value : *yes*  
+If set to *yes*, clients won't be able to access files inside the following directories : libraries, templates and vendor.
 
 `CAPTCHA_LOGIN_PUBLIC_KEY`  
 PMA setting : [$cfg\['CaptchaLoginPublicKey'\]](https://docs.phpmyadmin.net/en/latest/config.html#cfg_CaptchaLoginPublicKey)  
@@ -99,7 +92,29 @@ Values : *\<the reCAPTCHA v3 private key\>*
 Default value :  
 Set your private key if you want to enable reCAPTCHA v3 protection on the login page.
 
+`CONFIRM`  
+PMA setting : [$cfg\['Confirm'\]](https://docs.phpmyadmin.net/en/latest/config.html#cfg_Confirm)
+Values : *true* | *false*  
+Default value : *true*  
+If set to *true*, users will be asked to confirm before deleting data.
+
+`ALLOW_USER_DROP_DATABASE`  
+PMA setting : [$cfg\['AllowUserDropDatabase'\]](https://docs.phpmyadmin.net/en/latest/config.html#cfg_AllowUserDropDatabase)  
+Values : *true* | *false*  
+Default value : *false*  
+If set to *false*, users are not allowed to drop their databases within PHPMyAdmin.
+
 ## Information leak and privacy
+
+`HIDE_PMA_VERSION`  
+Values : *yes* / *no*  
+Default value : *yes*  
+If set to *yes*, the version of PHPMyAdmin will be set to 0.0.0. This is a 'hack' to prevent showing the real version to users. It hasn't been hardly tested yet to see if that breaks some features.
+
+`REMOVE_FILES`  
+Values : *\<list of files and directories to remove from PHPMyAdmin separated with space\>*  
+Default value : *\*.md ChangeLog DCO LICENSE README RELEASE-DATE-\* composer.json composer.lock config.sample.inc.php doc examples package.json setup yarn.lock*
+List of files and directories to remove inside the PHPMyAdmin folder.
 
 `SEND_ERROR_REPORTS`  
 PMA setting : [$cfg\['SendErrorReports'\]](https://docs.phpmyadmin.net/en/latest/config.html#cfg_SendErrorReports)  
@@ -136,6 +151,12 @@ PMA setting : [$cfg\['ShowGitRevision'\]](https://docs.phpmyadmin.net/en/latest/
 Values : *true* | *false*  
 Default value : *false*  
 If set to *true*, will show the GIT revision to the users.
+
+`USERPREFS_DISALLOW`  
+PMA setting : [$cfg\['UserprefsDisallow'\]](https://docs.phpmyadmin.net/fr/latest/config.html#cfg_UserprefsDisallow)  
+Values : *\<list of strings separated with ','\>*  
+Default value : *'VersionCheck', 'SendErrorReports', 'hide_db'*  
+List of settings that users can't override through the "settings" tab.
 
 ## Arbitrary servers
 
@@ -183,6 +204,20 @@ Values : *true* | *false*
 Default value : *true*  
 Is set to *true*, logout from one server will also delete the cookies for the other servers.
 
+## Configuration storage
+
+`ZERO_CONF`  
+PMA setting : [$cfg\['ZeroConf'\]](https://docs.phpmyadmin.net/en/latest/config.html#cfg_AuthLog)  
+Values : *true* | *false*  
+Default value : *false*  
+If set to *true*, user will be able to create a configuration storage himself using an existing database.
+
+`PMA_NO_RELATION_DISABLE_WARNING`  
+PMA setting : [$cfg\['PmaNoRelation_DisableWarning'\]](https://docs.phpmyadmin.net/en/latest/config.html#cfg_PmaNoRelation_DisableWarning)  
+Values : *true* | *false*  
+Default value : *true*  
+If set to *true*, warnings about configuration storage will not be printed.
+
 ## All servers
 
 *todo*
@@ -192,6 +227,4 @@ Is set to *true*, logout from one server will also delete the cookies for the ot
 *todo*
 
 # TODO
-- userprefsdisallow
-- configuration storage
-- prevent access to some files (libraries, templates, ...)
+- fail2ban 
