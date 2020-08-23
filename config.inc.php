@@ -69,10 +69,10 @@ $cfg['ShowGitRevision'] = %SHOW_GIT_REVISION%;
 $cfg['UserprefsDisallow'] = array(%USERPREFS_DISALLOW%);
 
 // enable/disable custom configuration storage for users : true or false
-cfg['ZeroConf'] = %ZERO_CONF%;
+$cfg['ZeroConf'] = %ZERO_CONF%;
 
 // show the warning about configuration storage not present : true or false
-cfg['PmaNoRelation_DisableWarning'] = %PMA_NO_RELATION_DISABLE_WARNING%;
+$cfg['PmaNoRelation_DisableWarning'] = %PMA_NO_RELATION_DISABLE_WARNING%;
 
 %ALL_SERVERS%
 

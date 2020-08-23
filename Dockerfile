@@ -9,6 +9,9 @@ RUN wget -O /tmp/phpmyadmin.zip https://files.phpmyadmin.net/phpMyAdmin/${PMA_VE
 # Copy nginx config
 COPY pma.conf /opt/pma.conf
 
+# Copy ModSecurity config
+COPY modsec.conf /opt/modsec.conf
+
 # Copy PHPMyAdmin config
 COPY config.inc.php /opt/config.inc.php
 

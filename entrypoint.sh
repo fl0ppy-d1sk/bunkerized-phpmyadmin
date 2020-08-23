@@ -40,10 +40,11 @@ SHOW_PHP_INFO="${SHOW_PHP_INFO-false}"
 SHOW_GIT_REVISION="${SHOW_GIT_REVISION-false}"
 USERPREFS_DISALLOW="${USERPREFS_DISALLOW-'VersionCheck', 'SendErrorReports', 'hide_db'}"
 HIDE_PMA_VERSION="${HIDE_PMA_VERSION-yes}"
-REMOVE_FILES="${REMOVE_FILES-*.md ChangeLog DCO LICENSE README RELEASE-DATE-* composer.json composer.lock config.sample.inc.php doc examples package.json yarn.lock}"
+REMOVE_FILES="${REMOVE_FILES-setup *.md ChangeLog DCO LICENSE README RELEASE-DATE-* composer.json composer.lock config.sample.inc.php doc examples package.json yarn.lock}"
 RESTRICT_PATHS="${RESTRICT_PATHS-yes}"
 ZERO_CONF="${ZERO_CONF-false}"
 PMA_NO_RELATION_DISABLE_WARNING="${PMA_NO_RELATION_DISABLE_WARNING-true}"
+MODSECURITY_CRS_EXCLUSIONS="${MODSECURITY_CRS_EXCLUSIONS-yes}"
 ALL_SERVERS_SSL="${ALL_SERVERS_SSL-false}"
 ALL_SERVERS_HIDE_DB="${ALL_SERVERS_HIDE_DB-'^(information_schema|performance_schema)\$'}"
 ALL_SERVERS_ALLOW_ROOT="${ALL_SERVERS_ALLOW_ROOT-true}"
@@ -81,7 +82,9 @@ replace_in_file "/opt/phpmyadmin/${PMA_DIRECTORY}/config.inc.php" "%SHOW_STATS%"
 replace_in_file "/opt/phpmyadmin/${PMA_DIRECTORY}/config.inc.php" "%SHOW_SERVER_INFO%" "$SHOW_SERVER_INFO"
 replace_in_file "/opt/phpmyadmin/${PMA_DIRECTORY}/config.inc.php" "%SHOW_PHP_INFO%" "$SHOW_PHP_INFO"
 replace_in_file "/opt/phpmyadmin/${PMA_DIRECTORY}/config.inc.php" "%SHOW_GIT_REVISION%" "$SHOW_GIT_REVISION"
+replace_in_file "/opt/phpmyadmin/${PMA_DIRECTORY}/config.inc.php" "%ZERO_CONF%" "$ZERO_CONF"
 replace_in_file "/opt/phpmyadmin/${PMA_DIRECTORY}/config.inc.php" "%USERPREFS_DISALLOW%" "$USERPREFS_DISALLOW"
+replace_in_file "/opt/phpmyadmin/${PMA_DIRECTORY}/config.inc.php" "%PMA_NO_RELATION_DISABLE_WARNING%" "$PMA_NO_RELATION_DISABLE_WARNING"
 
 # include custom servers
 for i in $(env | grep "^SERVERS_" | cut -d '_' -f 2 | sort -u) ; do
@@ -120,15 +123,20 @@ fi
 
 # include custom nginx configuration if we decided to restrict some paths
 if [ "$RESTRICT_PATHS" = "yes" ] ; then
-	cp /opt/pma.conf /custom-server-confs/pma.conf
+	cp /opt/pma.conf /server-confs/pma.conf
 	replace_pma_directory="$PMA_DIRECTORY"
 	if [ "$(echo $PMA_DIRECTORY | head -c 1)" != "/" ] ; then
 		replace_pma_directory="/${replace_pma_directory}"
 	fi
-	if [ "$(echo $PMA_DIRECTORY | tail -c 1)" != "/" ] ; then
+	if [ "$(echo -n $PMA_DIRECTORY | tail -c 1)" != "/" ] ; then
 		replace_pma_directory="${replace_pma_directory}/"
 	fi
-	replace_in_file "/custom-server-confs/pma.conf" "%PMA_DIRECTORY%" "$replace_pma_directory"
+	replace_in_file "/server-confs/pma.conf" "%PMA_DIRECTORY%" "$replace_pma_directory"
+fi
+
+# include modsecurity crs exclusions
+if [ "$MODSECURITY_CRS_EXCLUSIONS" = "yes" ] ; then
+	cp /opt/modsec.conf /modsec-confs
 fi
 
 # we're done

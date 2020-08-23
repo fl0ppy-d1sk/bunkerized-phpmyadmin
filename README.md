@@ -4,7 +4,14 @@ PHPMyAdmin Docker image focused on security.
 
 It's based based on [bunkerized-nginx](https://github.com/bunkerity/bunkerized-nginx) that adds many security features : automatic Let's Encrypt, ModSecurity, fail2ban, PHP hardening, HTTP headers ...
 
-Some PHPMyAdmin configuration (that resides inside conf.inc.php) can be easily tweaked using environment variables. If that's not enough, you can add your own configuration file.
+On top of that, bunkerized-phpmyadmin adds the following features :
+- Choose a subdirectory of your choice to make it harder to find your PHPMyAdmin (e.g. https://your.server.com/hidden-directory-hard-to-guess)
+- Hide the version number of PHPMyAdmin
+- Allow access to only the needed files (css, js, php, ...)
+- Delete unneeded files and folders (setup, doc, ...)
+- Many security-related configs already set by default
+- Easy to configure with environment variables
+- Bring your own configuration for custom needs
 
 # Table of contents
 
@@ -78,7 +85,12 @@ Use this variable to put PHPMyAdmin inside a subdirectory (it will be accessible
 `RESTRICT_PATHS`  
 Values : *yes* | *no*  
 Default value : *yes*  
-If set to *yes*, clients won't be able to access files inside the following directories : libraries, templates and vendor.
+If set to *yes*, clients won't be able to access files inside the following directories : libraries, locale, templates and vendor.
+
+`MODSECURITY_CRS_EXCLUSIONS`  
+Values : *yes* | *no*  
+Default value : *yes*  
+ModSecurity with OWASP Core Rule Set are enabled by default (inherited from bunkerity/bunkerized-nginx). If set to *yes*, will add some exclusions to CRS rules to avoid some false positives rules.
 
 `CAPTCHA_LOGIN_PUBLIC_KEY`  
 PMA setting : [$cfg\['CaptchaLoginPublicKey'\]](https://docs.phpmyadmin.net/en/latest/config.html#cfg_CaptchaLoginPublicKey)  
@@ -113,7 +125,7 @@ If set to *yes*, the version of PHPMyAdmin will be set to 0.0.0. This is a 'hack
 
 `REMOVE_FILES`  
 Values : *\<list of files and directories to remove from PHPMyAdmin separated with space\>*  
-Default value : *\*.md ChangeLog DCO LICENSE README RELEASE-DATE-\* composer.json composer.lock config.sample.inc.php doc examples package.json setup yarn.lock*
+Default value : *setup \*.md ChangeLog DCO LICENSE README RELEASE-DATE-\* composer.json composer.lock config.sample.inc.php doc examples package.json setup yarn.lock*
 List of files and directories to remove inside the PHPMyAdmin folder.
 
 `SEND_ERROR_REPORTS`  
