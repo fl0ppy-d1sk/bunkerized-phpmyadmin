@@ -45,10 +45,7 @@ RESTRICT_PATHS="${RESTRICT_PATHS-yes}"
 ZERO_CONF="${ZERO_CONF-false}"
 PMA_NO_RELATION_DISABLE_WARNING="${PMA_NO_RELATION_DISABLE_WARNING-true}"
 MODSECURITY_CRS_EXCLUSIONS="${MODSECURITY_CRS_EXCLUSIONS-yes}"
-ALL_SERVERS_SSL="${ALL_SERVERS_SSL-false}"
-ALL_SERVERS_HIDE_DB="${ALL_SERVERS_HIDE_DB-'^(information_schema|performance_schema)\$'}"
-ALL_SERVERS_ALLOW_ROOT="${ALL_SERVERS_ALLOW_ROOT-true}"
-ALL_SERVERS_ALLOW_NO_PASSWORD="${ALL_SERVERS_ALLOW_NO_PASSWORD-false}"
+HIDE_DB="${HIDE_DB-'^(information_schema|performance_schema)\$'}"
 
 # move to the right directory
 mkdir /opt/phpmyadmin
@@ -88,10 +85,9 @@ replace_in_file "/opt/phpmyadmin/${PMA_DIRECTORY}/config.inc.php" "%PMA_NO_RELAT
 
 # include custom servers
 for i in $(env | grep "^SERVERS_" | cut -d '_' -f 2 | sort -u) ; do
-	ALL_SERVERS="${ALL_SERVERS}\$cfg['Servers'][$i]['ssl'] = ${ALL_SERVERS_SSL};\n"
-	ALL_SERVERS="${ALL_SERVERS}\$cfg['Servers'][$i]['hide_db'] = ${ALL_SERVERS_HIDE_DB};\n"
-	ALL_SERVERS="${ALL_SERVERS}\$cfg['Servers'][$i]['AllowRoot'] = ${ALL_SERVERS_ALLOW_ROOT};\n"
-	ALL_SERVERS="${ALL_SERVERS}\$cfg['Servers'][$i]['AllowNoPassword'] = ${ALL_SERVERS_ALLOW_NO_PASSWORD};\n"
+	if [ "$HIDE_DB" != "" ] ; then
+		ALL_SERVERS="${ALL_SERVERS}\$cfg['Servers'][$i]['hide_db'] = '${HIDE_DB}';\n"
+	fi
 done
 for var in $(env) ; do
 	#echo "$var"
@@ -105,7 +101,7 @@ for var in $(env) ; do
 done
 replace_in_file "/opt/phpmyadmin/${PMA_DIRECTORY}/config.inc.php" "%ALL_SERVERS%" "$ALL_SERVERS"
 
-# the hackish way to hide the real version of PMA
+# hackish way to hide the real version of PMA
 if [ "$HIDE_PMA_VERSION" = "yes" ] ; then
 	replace_in_file "/opt/phpmyadmin/${PMA_DIRECTORY}/libraries/classes/Config.php" "$PMA_VERSION" "0.0.0"
 	for theme in $(ls /opt/phpmyadmin/${PMA_DIRECTORY}/themes | grep -v "dot.gif") ; do

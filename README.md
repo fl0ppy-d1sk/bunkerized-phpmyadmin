@@ -5,9 +5,9 @@ PHPMyAdmin Docker image focused on security.
 It's based based on [bunkerized-nginx](https://github.com/bunkerity/bunkerized-nginx) that adds many security features : automatic Let's Encrypt, ModSecurity, fail2ban, PHP hardening, HTTP headers ...
 
 On top of that, bunkerized-phpmyadmin adds the following features :
-- Choose a subdirectory of your choice to make it harder to find your PHPMyAdmin (e.g. https://your.server.com/hidden-directory-hard-to-guess)
+- Choose a subdirectory of your choice to make it harder to find your PHPMyAdmin (like https://your.server.com/hidden-directory-hard-to-guess)
 - Hide the version number of PHPMyAdmin
-- Allow access to only the needed files (css, js, php, ...)
+- Allow access to only the needed files (only css, js, php, ...)
 - Delete unneeded files and folders (setup, doc, ...)
 - Many security-related configs already set by default
 - Easy to configure with environment variables
@@ -74,6 +74,16 @@ $cfg['Servers'][3]['AllowRoot'] = 'mysql.server3.com';
 ```
 
 Every server connection settings listed in the documentation can be used (see https://docs.phpmyadmin.net/en/latest/config.html#server-connection-settings).
+
+## All servers config
+
+These settings will be applied to all of the servers defined by the `SERVER_\*` variables.
+
+`HIDE_DB`  
+PMA setting : [$cfg\['Servers'\]\[$i\]\['hide_db'\]](https://docs.phpmyadmin.net/fr/latest/config.html#cfg_Servers_hide_db)  
+Values : *\<regex used to hide db\>*  
+Default value : *^(information_schema|performance_schema)$*  
+A regex used to hide some database from the list.
 
 ## Security
 
@@ -230,13 +240,19 @@ Values : *true* | *false*
 Default value : *true*  
 If set to *true*, warnings about configuration storage will not be printed.
 
-## All servers
-
-*todo*
-
 # Custom configuration file
 
-*todo*
+You can your own custom configuration file called *custom.config.inc.php* inside the PMA directory (/opt/phpmyadmin by default). The easiest way is to use a volume :
+
+```shell
+docker run ... -v /path/to/your/custom.config.inc.php:/opt/phpmyadmin/custom.config.inc.php ... bunkerity/bunkerized-phpmyadmin
+```
+
+Please note, if you set `PMA_DIRECTORY` you should adjust the destination path of the volume :
+
+```shell
+docker run ... -e PMA_DIRECTORY=hidden-pma ... -v /path/to/your/custom.config.inc.php:/opt/phpmyadmin/hidden-pma/custom.config.inc.php ... bunkerity/bunkerized-phpmyadmin
+```
 
 # TODO
-- fail2ban 
+- fail2ban on failed logins
