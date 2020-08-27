@@ -1,12 +1,12 @@
 # bunkerized-phpmyadmin
 
-PHPMyAdmin Docker image focused on security.
+phpMyAdmin Docker image focused on security.
 
 It's based based on [bunkerized-nginx](https://github.com/bunkerity/bunkerized-nginx) that adds many security features : automatic Let's Encrypt, ModSecurity, fail2ban, PHP hardening, HTTP headers ...
 
 On top of that, bunkerized-phpmyadmin adds the following features :
-- Choose a subdirectory of your choice to make it harder to find your PHPMyAdmin (like https://your.server.com/hidden-directory-hard-to-guess)
-- Hide the version number of PHPMyAdmin
+- Choose a subdirectory of your choice to make it harder to find your phpMyAdmin (like https://your.server.com/hidden-directory-hard-to-guess)
+- Hide the version number of phpMyAdmin
 - Allow access to only the needed files (only css, js, php, ...)
 - Delete unneeded files and folders (setup, doc, ...)
 - Many security-related configs already set by default
@@ -15,7 +15,23 @@ On top of that, bunkerized-phpmyadmin adds the following features :
 
 # Table of contents
 
-TODO
+- [bunkerized-phpmyadmin](#bunkerized-phpmyadmin)
+- [Table of contents](#table-of-contents)
+- [Quickstart guide](#quickstart-guide)
+  * [Basic usage](#basic-usage)
+  * [HTTPS support](#https-support)
+  * [More security](#more-security)
+- [Environment variables](#environment-variables)
+  * [Inherited from bunkerized-nginx](#inherited-from-bunkerized-nginx)
+  * [Servers](#servers)
+  * [All servers config](#all-servers-config)
+  * [Security](#security)
+  * [Information leak and privacy](#information-leak-and-privacy)
+  * [Arbitrary servers](#arbitrary-servers)
+  * [Cookie](#cookie)
+  * [Configuration storage](#configuration-storage)
+- [Custom configuration file](#custom-configuration-file)
+- [TODO](#todo)
 
 # Quickstart guide
 
@@ -36,24 +52,24 @@ docker run -p 80:80 -p 443:443 -e AUTO_LETS_ENCRYPT=yes -e SERVER_NAME=phpmyadmi
 It will listen both standard HTTP and HTTPS ports and will handle connections to the servers accessible from mysql.server1.com and mysql.server2.com.
 
 The following environment variables are inherited from [bunkerized-nginx](https://github.com/bunkerity/bunkerized-nginx) :
-- AUTO_LETS_ENCRYPT : automatic Let's Encrypt certificate generation and renewal
-- SERVER_NAME : your domain name (mandatory for Let's Encrypt)
-- REDIRECT_HTTP_TO_HTTPS : all HTTP requests will be redirected to HTTPS
+- `AUTO_LETS_ENCRYPT` : automatic Let's Encrypt certificate generation and renewal
+- `SERVER_NAME` : your domain name (mandatory for Let's Encrypt)
+- `REDIRECT_HTTP_TO_HTTPS` : all HTTP requests will be redirected to HTTPS
 
-## More security
+## More security
 
 ```shell
 docker run -p 80:80 -p 443:443 -e AUTO_LETS_ENCRYPT=yes -e SERVER_NAME=phpmyadmin.mydomain.net -e REDIRECT_HTTP_TO_HTTPS=yes -e PMA_DIRECTORY=my-secret-directory CAPTCHA_LOGIN_PUBLIC_KEY=public-key-recaptcha-v3 CAPTCHA_LOGIN_PRIVATE_KEY=prviate-key-recaptcha-v3 -e SERVER_1_host='mysql.server.com' bunkerity/bunkerized-phpmyadmin
 ```
 
-- PMA_DIRECTORY : choose a subdirectory where PHPMyAdmin will be located (https://phpmyadmin.mydomain.net/my-secret-directory in this example)
-- CAPTCHA_LOGIN_PRIVATE_KEY AND CAPTCHA_LOGIN_PRIVATE_KEY : the public and private keys given by Google to enable RECAPTCHA v3 on the login page
+- `PMA_DIRECTORY` : choose a subdirectory where phpMyAdmin will be located (https://phpmyadmin.mydomain.net/my-secret-directory in this example)
+- `CAPTCHA_LOGIN_PRIVATE_KEY` AND `CAPTCHA_LOGIN_PRIVATE_KEY` : the public and private keys given by Google to enable reCAPTCHA v3 on the login page
 
 # Environment variables
 
 ## Inherited from bunkerized-nginx
 
-All environment variables from bunkerized-nginx can be used. Feel free to do so.
+All environment variables from [bunkerized-nginx](https://github.com/bunkerity/bunkerized-nginx) can be used. Feel free to do so.
 
 ## Servers
 
@@ -90,7 +106,7 @@ A regex used to hide some database from the list.
 `PMA_DIRECTORY`  
 Values : *\<any valid directory name\>*  
 Default value :  
-Use this variable to put PHPMyAdmin inside a subdirectory (it will be accessible from http(s)://your.server.com/subdirectory). Can be usefull if your instance is accessible from Internet to avoid automatic scripts discovering your service.
+Use this variable to put phpMyAdmin inside a subdirectory (it will be accessible from http(s)://your.server.com/subdirectory). Can be usefull if your instance is accessible from Internet to avoid automatic scripts discovering your service.
 
 `RESTRICT_PATHS`  
 Values : *yes* | *no*  
@@ -104,13 +120,13 @@ ModSecurity with OWASP Core Rule Set are enabled by default (inherited from bunk
 
 `CAPTCHA_LOGIN_PUBLIC_KEY`  
 PMA setting : [$cfg\['CaptchaLoginPublicKey'\]](https://docs.phpmyadmin.net/en/latest/config.html#cfg_CaptchaLoginPublicKey)  
-Values : *\<the reCAPTCHA v3 public key\>* 
+Values : *\<the reCAPTCHA v3 public key\>*  
 Default value :  
 Set your public key if you want to enable reCAPTCHA v3 protection on the login page.
 
 `CAPTCHA_LOGIN_PRIVATE_KEY`  
 PMA setting : [$cfg\['CaptchaLoginPublicKey'\]](https://docs.phpmyadmin.net/en/latest/config.html#cfg_CaptchaLoginPublicKey)  
-Values : *\<the reCAPTCHA v3 private key\>* 
+Values : *\<the reCAPTCHA v3 private key\>*  
 Default value :  
 Set your private key if you want to enable reCAPTCHA v3 protection on the login page.
 
@@ -124,31 +140,31 @@ If set to *true*, users will be asked to confirm before deleting data.
 PMA setting : [$cfg\['AllowUserDropDatabase'\]](https://docs.phpmyadmin.net/en/latest/config.html#cfg_AllowUserDropDatabase)  
 Values : *true* | *false*  
 Default value : *false*  
-If set to *false*, users are not allowed to drop their databases within PHPMyAdmin.
+If set to *false*, users are not allowed to drop their databases within phpMyAdmin.
 
 ## Information leak and privacy
 
 `HIDE_PMA_VERSION`  
 Values : *yes* / *no*  
 Default value : *yes*  
-If set to *yes*, the version of PHPMyAdmin will be set to 0.0.0. This is a 'hack' to prevent showing the real version to users. It hasn't been hardly tested yet to see if that breaks some features.
+If set to *yes*, the version of phpMyAdmin will be set to 0.0.0. This is a 'hack' to prevent showing the real version to users. It hasn't been hardly tested yet to see if that breaks some features.
 
 `REMOVE_FILES`  
-Values : *\<list of files and directories to remove from PHPMyAdmin separated with space\>*  
-Default value : *setup \*.md ChangeLog DCO LICENSE README RELEASE-DATE-\* composer.json composer.lock config.sample.inc.php doc examples package.json setup yarn.lock*
-List of files and directories to remove inside the PHPMyAdmin folder.
+Values : *\<list of files and directories to remove from phpMyAdmin separated with space\>*  
+Default value : *setup \*.md ChangeLog DCO LICENSE README RELEASE-DATE-\* composer.json composer.lock config.sample.inc.php doc examples package.json setup yarn.lock*  
+List of files and directories to remove inside the phpMyAdmin folder.
 
 `SEND_ERROR_REPORTS`  
 PMA setting : [$cfg\['SendErrorReports'\]](https://docs.phpmyadmin.net/en/latest/config.html#cfg_SendErrorReports)  
 Values : *ask* | *always* | *never*  
 Default value : *never*  
-The default policy for sending error reports to the PHPMyAdmin team.
+The default policy for sending error reports to the phpMyAdmin team.
 
 `VERSION_CHECK`  
 PMA setting : [$cfg\['VersionCheck'\]](https://docs.phpmyadmin.net/en/latest/config.html#cfg_VersionCheck)  
 Values : *true* | *false*  
 Default value : *false*  
-If set to *true*, will tells users if there is an update of PHPMyAdmin.
+If set to *true*, will tells users if there is an update of phpMyAdmin.
 
 `SHOW_STATS`  
 PMA setting : [$cfg\['ShowStats'\]](https://docs.phpmyadmin.net/en/latest/config.html#cfg_ShowStats)  
@@ -208,7 +224,7 @@ Values : *true* | *false*
 Default value : *false*  
 If set to true, the previous login will appear on the connexion page.
 
-`LOGIN_COOKIE_VALIDITY`
+`LOGIN_COOKIE_VALIDITY`  
 PMA setting : [$cfg\['LoginCookieValidity'\]](https://docs.phpmyadmin.net/en/latest/config.html#cfg_LoginCookieValidity) 
 Values : *\<any positive integer\>*  
 Default value :  *3600*  
@@ -256,3 +272,4 @@ docker run ... -e PMA_DIRECTORY=hidden-pma ... -v /path/to/your/custom.config.in
 
 # TODO
 - fail2ban on failed logins
+- UserprefsDisallow remove quotes

@@ -1,0 +1,7 @@
+[INCLUDES]
+before = common.conf
+
+[Definition]
+failregex = .* phpMyAdmin\[\d*\]: user denied: .* (mysql-denied) from <HOST>
+ignoreregex =
+datepattern = %%b %%d %%H:%%M:%%S
