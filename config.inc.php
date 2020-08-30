@@ -5,6 +5,9 @@ declare(strict_types=1);
 // where to store cache data
 $cfg['TempDir'] = '/tmp';
 
+// log failed login to syslog
+$cfg['AuthLog'] = 'php';
+
 // secret used when auth method is cookie
 $cfg['blowfish_secret'] = '%BLOWFISH_SECRET%';
 

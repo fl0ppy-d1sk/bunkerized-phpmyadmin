@@ -45,7 +45,11 @@ RESTRICT_PATHS="${RESTRICT_PATHS-yes}"
 ZERO_CONF="${ZERO_CONF-false}"
 PMA_NO_RELATION_DISABLE_WARNING="${PMA_NO_RELATION_DISABLE_WARNING-true}"
 MODSECURITY_CRS_EXCLUSIONS="${MODSECURITY_CRS_EXCLUSIONS-yes}"
-HIDE_DB="${HIDE_DB-'^(information_schema|performance_schema)\$'}"
+HIDE_DB="${HIDE_DB-^(information_schema|performance_schema)\$}"
+PMA_FAIL2BAN="${PMA_FAIL2BAN-yes}"
+PMA_FAIL2BAN_BANTIME="${PMA_FAIL2BAN_BANTIME-3600}"
+PMA_FAIL2BAN_FINDTIME="${PMA_FAIL2BAN_FINDTIME-600}"
+PMA_FAIL2BAN_MAXRETRY="${PMA_FAIL2BAN_MAXRETRY-5}"
 
 # move to the right directory
 mkdir /opt/phpmyadmin
@@ -133,6 +137,16 @@ fi
 # include modsecurity crs exclusions
 if [ "$MODSECURITY_CRS_EXCLUSIONS" = "yes" ] ; then
 	cp /opt/modsec.conf /modsec-confs
+fi
+
+# include fail2ban configs if needed
+if [ "$PMA_FAIL2BAN" = "yes" ] ; then
+	cp /opt/pma-fail2ban/pma-action.local /etc/fail2ban/action.d/pma-action.local
+	cp /opt/pma-fail2ban/pma-filter.local /etc/fail2ban/filter.d/pma-filter.local
+	cp /opt/pma-fail2ban/pma-jail.local /etc/fail2ban/jail.d/pma-jail.local
+	replace_in_file "/etc/fail2ban/jail.d/pma-jail.local" "%PMA_FAIL2BAN_BANTIME%" "$PMA_FAIL2BAN_BANTIME"
+	replace_in_file "/etc/fail2ban/jail.d/pma-jail.local" "%PMA_FAIL2BAN_FINDTIME%" "$PMA_FAIL2BAN_FINDTIME"
+	replace_in_file "/etc/fail2ban/jail.d/pma-jail.local" "%PMA_FAIL2BAN_MAXRETRY%" "$PMA_FAIL2BAN_MAXRETRY"
 fi
 
 # we're done

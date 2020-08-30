@@ -6,14 +6,11 @@ RUN wget -O /tmp/phpmyadmin.zip https://files.phpmyadmin.net/phpMyAdmin/${PMA_VE
     unzip /tmp/phpmyadmin.zip -d /opt && \
     mv /opt/phpMyAdmin-${PMA_VERSION}-all-languages /opt/phpmyadmin-files
 
-# Copy nginx config
+# Copy configs
 COPY pma.conf /opt/pma.conf
-
-# Copy ModSecurity config
 COPY modsec.conf /opt/modsec.conf
-
-# Copy PHPMyAdmin config
 COPY config.inc.php /opt/config.inc.php
+COPY fail2ban /opt/pma-fail2ban
 
 # Copy additional entrypoint
 COPY entrypoint.sh /entrypoint.d/pma.sh

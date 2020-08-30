@@ -1,9 +1,7 @@
-[DEFAULTS]
+[pma-filter]
 bantime = %PMA_FAIL2BAN_BANTIME%
 findtime = %PMA_FAIL2BAN_FINDTIME%
 maxretry = %PMA_FAIL2BAN_MAXRETRY%
-
-[pma-filter]
 enabled = true
 action = pma-action
-logpath = /var/log/messages
+logpath = /var/log/php.log
