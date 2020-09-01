@@ -1,6 +1,6 @@
 # bunkerized-phpmyadmin
 
-![bunkerized-phpmyadmin logo](https://github.com/bunkerity/bunkerized-phpmyadmin/blob/master/logo.png?raw=true)
+<img src="https://github.com/bunkerity/bunkerized-phpmyadmin/blob/master/logo.png?raw=true" width="425" />
 
 phpMyAdmin Docker image focused on security.  
 
