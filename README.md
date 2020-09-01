@@ -1,12 +1,15 @@
 # bunkerized-phpmyadmin
 
-phpMyAdmin Docker image focused on security.
+!(bunkerized-phpmyadmin logo)[https://github.com/bunkerity/bunkerized-phpmyadmin/blob/master/logo.png?raw=true)
 
-It's based based on [bunkerized-nginx](https://github.com/bunkerity/bunkerized-nginx) that adds many security features : automatic Let's Encrypt, ModSecurity, fail2ban, PHP hardening, HTTP headers ...
+phpMyAdmin Docker image focused on security.  
+
+It's based based on [bunkerized-nginx](https://github.com/bunkerity/bunkerized-nginx) that adds many security features : automatic Let's Encrypt, ModSecurity, fail2ban, PHP hardening, HTTP headers ...  
 
 On top of that, bunkerized-phpmyadmin adds the following features :
 - Choose a subdirectory of your choice to make it harder to find your phpMyAdmin (like https://your.server.com/hidden-directory-hard-to-guess)
 - Hide the version number of phpMyAdmin
+- Prevent bruteforce attacks with fail2ban
 - Allow access to only the needed files (only css, js, php, ...)
 - Delete unneeded files and folders (setup, doc, ...)
 - Many security-related configs already set by default
@@ -69,7 +72,7 @@ docker run -p 80:80 -p 443:443 -e AUTO_LETS_ENCRYPT=yes -e SERVER_NAME=phpmyadmi
 
 ## Inherited from bunkerized-nginx
 
-All environment variables from [bunkerized-nginx](https://github.com/bunkerity/bunkerized-nginx) can be used. Feel free to do so.
+All environment variables from [bunkerized-nginx](https://github.com/bunkerity/bunkerized-nginx#list-of-environment-variables) can be used. Feel free to do so.
 
 ## Servers
 
@@ -131,7 +134,7 @@ Default value :
 Set your private key if you want to enable reCAPTCHA v3 protection on the login page.
 
 `CONFIRM`  
-PMA setting : [$cfg\['Confirm'\]](https://docs.phpmyadmin.net/en/latest/config.html#cfg_Confirm)
+PMA setting : [$cfg\['Confirm'\]](https://docs.phpmyadmin.net/en/latest/config.html#cfg_Confirm)  
 Values : *true* | *false*  
 Default value : *true*  
 If set to *true*, users will be asked to confirm before deleting data.
@@ -237,12 +240,12 @@ Default value : *0*
 The number of seconds to keep the cookie inside the browser. *0* means the cookie will only be kept for the current session.
 
 `LOGIN_COOKIE_DELETE_ALL`  
-PMA setting : [$cfg\['LoginCookieDeleteAll'\](https://docs.phpmyadmin.net/en/latest/config.html#cfg_LoginCookieDeleteAll)  
+PMA setting : [$cfg\['LoginCookieDeleteAll'\]](https://docs.phpmyadmin.net/en/latest/config.html#cfg_LoginCookieDeleteAll)  
 Values : *true* | *false*  
 Default value : *true*  
 Is set to *true*, logout from one server will also delete the cookies for the other servers.
 
-## Configuration storage
+## Configuration storage
 
 `ZERO_CONF`  
 PMA setting : [$cfg\['ZeroConf'\]](https://docs.phpmyadmin.net/en/latest/config.html#cfg_AuthLog)  
@@ -271,5 +274,4 @@ docker run ... -e PMA_DIRECTORY=hidden-pma ... -v /path/to/your/custom.config.in
 ```
 
 # TODO
-- fail2ban on failed logins
-- UserprefsDisallow remove quotes
+- demo : single user with only select privileges
