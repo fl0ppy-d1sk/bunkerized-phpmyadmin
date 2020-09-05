@@ -16,7 +16,10 @@ COPY fail2ban /opt/pma-fail2ban
 COPY entrypoint.sh /entrypoint.d/pma.sh
 RUN chmod +x /entrypoint.d/pma.sh
 
+# Custom config file directory
+VOLUME /pma-conf
+
 # Customize bunkerized-nginx environment variables
 ENV ROOT_FOLDER /opt/phpmyadmin
-ENV PHP_OPEN_BASEDIR /opt/phpmyadmin/:/tmp/
+ENV PHP_OPEN_BASEDIR /opt/phpmyadmin/:/tmp/:/pma-conf
 ENV ADDITIONAL_MODULES php7-mysqli php7-session php7-ctype php7-json php7-mbstring php7-zip php7-gd php7-openssl php7-xml php7-xmlwriter php7-xmlreader php7-iconv php7-curl

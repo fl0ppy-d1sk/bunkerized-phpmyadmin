@@ -20,6 +20,7 @@ On top of that, bunkerized-phpmyadmin adds the following features :
 
 - [bunkerized-phpmyadmin](#bunkerized-phpmyadmin)
 - [Table of contents](#table-of-contents)
+- [Live demo](#live-demo)
 - [Quickstart guide](#quickstart-guide)
   * [Basic usage](#basic-usage)
   * [HTTPS support](#https-support)
@@ -35,6 +36,10 @@ On top of that, bunkerized-phpmyadmin adds the following features :
   * [Configuration storage](#configuration-storage)
 - [Custom configuration file](#custom-configuration-file)
 - [TODO](#todo)
+
+# Live demo
+
+You can find a live demo at https://demo-pma.bunkerity.com/demo-pma. Use the following credentials : demo / bunkerizedPMA42!
 
 # Quickstart guide
 
@@ -76,10 +81,10 @@ All environment variables from [bunkerized-nginx](https://github.com/bunkerity/b
 
 ## Servers
 
-The following format is used to configure remote servers : SERVER_*index*_*config*=*value*. Here is an example :
+The following format is used to configure remote servers : SERVERS_*index*_*config*=*value*. Here is an example :
 
 ```shell
-docker run ... -e SERVER_1_host='mysql.server1.com' -e SERVER_2_host='mysql.server2.com' -e SERVER_2_port=1337 -e SERVER_3_host='mysql.server3.com' -e SERVER_3_AllowRoot=false ... bunkerity/bunkerized-phpmyadmin
+docker run ... -e SERVERS_1_host='mysql.server1.com' -e SERVERS_2_host='mysql.server2.com' -e SERVERS_2_port=1337 -e SERVERS_3_host='mysql.server3.com' -e SERVERS_3_AllowRoot=false ... bunkerity/bunkerized-phpmyadmin
 ```
 
 This example will be translated to this PHP code inside the config.inc.php file :
@@ -261,17 +266,8 @@ If set to *true*, warnings about configuration storage will not be printed.
 
 # Custom configuration file
 
-You can your own custom configuration file called *custom.config.inc.php* inside the PMA directory (/opt/phpmyadmin by default). The easiest way is to use a volume :
+You can your own custom configuration file called *custom.config.inc.php* inside the /pma-conf directory. The easiest way is to use a volume :
 
 ```shell
-docker run ... -v /path/to/your/custom.config.inc.php:/opt/phpmyadmin/custom.config.inc.php ... bunkerity/bunkerized-phpmyadmin
+docker run ... -v /path/to/your/custom.config.inc.php:/pma-conf/custom.config.inc.php ... bunkerity/bunkerized-phpmyadmin
 ```
-
-Please note, if you set `PMA_DIRECTORY` you should adjust the destination path of the volume :
-
-```shell
-docker run ... -e PMA_DIRECTORY=hidden-pma ... -v /path/to/your/custom.config.inc.php:/opt/phpmyadmin/hidden-pma/custom.config.inc.php ... bunkerity/bunkerized-phpmyadmin
-```
-
-# TODO
-- demo : single user with only select privileges

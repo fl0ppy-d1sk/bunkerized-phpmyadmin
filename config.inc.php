@@ -79,7 +79,7 @@ $cfg['PmaNoRelation_DisableWarning'] = %PMA_NO_RELATION_DISABLE_WARNING%;
 
 %ALL_SERVERS%
 
-include("custom.config.inc.php");
+include("/pma-conf/custom.config.inc.php");
 
 ?>
 
