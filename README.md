@@ -25,6 +25,7 @@ On top of that, bunkerized-phpmyadmin adds the following features :
   * [Basic usage](#basic-usage)
   * [HTTPS support](#https-support)
   * [More security](#more-security)
+- [Tutorials](#tutorials)
 - [Environment variables](#environment-variables)
   * [Inherited from bunkerized-nginx](#inherited-from-bunkerized-nginx)
   * [Servers](#servers)
@@ -35,7 +36,6 @@ On top of that, bunkerized-phpmyadmin adds the following features :
   * [Cookie](#cookie)
   * [Configuration storage](#configuration-storage)
 - [Custom configuration file](#custom-configuration-file)
-- [TODO](#todo)
 
 # Live demo
 
@@ -46,7 +46,7 @@ You can find a live demo at https://demo-pma.bunkerity.com/demo-pma. Use the fol
 ## Basic usage
 
 ```shell
-docker run -p 80:80 -e SERVER_1_host='mysql.server.com' bunkerity/bunkerized-phpmyadmin
+docker run -p 80:80 -e SERVERS_1_host='mysql.server.com' bunkerity/bunkerized-phpmyadmin
 ```
 
 It will listen on standard HTTP port and will handle connections to the server accessible from mysql.server.com (you can also use an IP address).
@@ -54,7 +54,7 @@ It will listen on standard HTTP port and will handle connections to the server a
 ## HTTPS support
 
 ```shell
-docker run -p 80:80 -p 443:443 -e AUTO_LETS_ENCRYPT=yes -e SERVER_NAME=phpmyadmin.mydomain.net -e REDIRECT_HTTP_TO_HTTPS=yes -e SERVER_1_host='mysql.server1.com' -e SERVER_2_host='mysql.server2.com' bunkerity/bunkerized-phpmyadmin
+docker run -p 80:80 -p 443:443 -v /where/to/save/letsencrypt/certs:/etc/letsencrypt -e AUTO_LETS_ENCRYPT=yes -e SERVER_NAME=phpmyadmin.mydomain.net -e REDIRECT_HTTP_TO_HTTPS=yes -e SERVERS_1_host='mysql.server1.com' -e SERVERS_2_host='mysql.server2.com' bunkerity/bunkerized-phpmyadmin
 ```
 
 It will listen both standard HTTP and HTTPS ports and will handle connections to the servers accessible from mysql.server1.com and mysql.server2.com.
@@ -67,11 +67,15 @@ The following environment variables are inherited from [bunkerized-nginx](https:
 ## More security
 
 ```shell
-docker run -p 80:80 -p 443:443 -e AUTO_LETS_ENCRYPT=yes -e SERVER_NAME=phpmyadmin.mydomain.net -e REDIRECT_HTTP_TO_HTTPS=yes -e PMA_DIRECTORY=my-secret-directory CAPTCHA_LOGIN_PUBLIC_KEY=public-key-recaptcha-v3 CAPTCHA_LOGIN_PRIVATE_KEY=prviate-key-recaptcha-v3 -e SERVER_1_host='mysql.server.com' bunkerity/bunkerized-phpmyadmin
+docker run -p 80:80 -p 443:443 -v /where/to/save/letsencrypt/certs:/etc/letsencrypt -e AUTO_LETS_ENCRYPT=yes -e SERVER_NAME=phpmyadmin.mydomain.net -e REDIRECT_HTTP_TO_HTTPS=yes -e PMA_DIRECTORY=my-secret-directory CAPTCHA_LOGIN_PUBLIC_KEY=public-key-recaptcha-v3 CAPTCHA_LOGIN_PRIVATE_KEY=private-key-recaptcha-v3 -e SERVERS_1_host='mysql.server.com' bunkerity/bunkerized-phpmyadmin
 ```
 
 - `PMA_DIRECTORY` : choose a subdirectory where phpMyAdmin will be located (https://phpmyadmin.mydomain.net/my-secret-directory in this example)
 - `CAPTCHA_LOGIN_PRIVATE_KEY` AND `CAPTCHA_LOGIN_PRIVATE_KEY` : the public and private keys given by Google to enable reCAPTCHA v3 on the login page
+
+# Tutorials
+
+You can learn more about bunkerized-phpmyadmin in our [blog](https://www.bunkerity.com/category/bunkerized-phpmyadmin/).
 
 # Environment variables
 
@@ -138,6 +142,26 @@ Values : *\<the reCAPTCHA v3 private key\>*
 Default value :  
 Set your private key if you want to enable reCAPTCHA v3 protection on the login page.
 
+`PMA_FAIL2BAN`  
+Values : *yes* | *no*  
+Default value : *yes*  
+If set to yes, fail2ban will be configured to block bruteforce attacks on PMA login. If `PMA_FAIL2BAN_MAXRETRY` failed login happened within `PMA_FAIL2BAN_FINDTIME` seconds then the corresponding IP address is banned during `PMA_FAIL2BAN_BANTIME`.
+
+`PMA_FAIL2BAN_MAXRETRY`  
+Values : *\<any positive integer\>*  
+Default value : *5*  
+The minimum number of failed login before banning the corresponding IP address.
+
+`PMA_FAIL2BAN_FINDTIME`  
+Values : *\<any positive integer\>*  
+Default value : *600*  
+The time period (in seconds) to search for failed login attempts.
+
+`PMA_FAIL2BAN_BANTIME`  
+Values : *\<any positive integer\>*  
+Default value : *36*  
+The duration of the ban (in seconds) when bruteforce attack has been detected.
+
 `CONFIRM`  
 PMA setting : [$cfg\['Confirm'\]](https://docs.phpmyadmin.net/en/latest/config.html#cfg_Confirm)  
 Values : *true* | *false*  
@@ -155,7 +179,7 @@ If set to *false*, users are not allowed to drop their databases within phpMyAdm
 `HIDE_PMA_VERSION`  
 Values : *yes* / *no*  
 Default value : *yes*  
-If set to *yes*, the version of phpMyAdmin will be set to 0.0.0. This is a 'hack' to prevent showing the real version to users. It hasn't been hardly tested yet to see if that breaks some features.
+If set to *yes*, the version of phpMyAdmin will be set to 0.0.0. This is a 'hack' to prevent showing the real version to users (more info [here](https://www.bunkerity.com/hide-version-of-phpmyadmin/)). It hasn't been hardly tested yet to see if that breaks some features, feel free to open an issue on GitHub if that happens.
 
 `REMOVE_FILES`  
 Values : *\<list of files and directories to remove from phpMyAdmin separated with space\>*  
